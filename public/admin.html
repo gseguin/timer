@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Demo Timer Admin</title>
+	<script type="text/javascript" charset="utf-8"
+	        src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<style>
+		html, body, iframe {
+			padding: 0;
+			margin: 0;
+			border: 0;
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+		}
+
+		input {
+			font-weight: bold;
+			font-family: "Trebuchet MS";
+			font-size: 12pt;
+		}
+	</style>
+</head>
+<body>
+<div id="controlPanel">
+	<input type="button" value="reset and start" data-cmd="start">
+	<input type="button" value="reset and stop"  data-cmd="stop">
+	<input type="button" value="pause"           data-cmd="pause">
+	<input id="duration" type="number" value="5"><span>min</span>
+</div>
+<script>
+	(function() {
+		var socket = io.connect( location.protocol + "//" + location.hostname + ":" + location.port );
+
+		$( "#controlPanel" ).delegate( "input[type=button]", "click", function( e ) {
+			var cmd = $( e.target ).data( "cmd" );
+			if ( cmd == "start" ) {
+				socket.emit( "start", { duration: $( "#duration" ).val() * 60 });
+			} else {
+				socket.send( cmd );
+			}
+		});
+	}());
+</script>
+<iframe id="timer" src="/index.html">
+</body>
+</html>
