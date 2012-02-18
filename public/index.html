@@ -10,6 +10,13 @@
 	<script src="/socket.io/socket.io.js"></script>
 
 	<style type="text/css">
+    body {
+      -webkit-transition: background-color 0.5s ease-in-out;
+         -moz-transition: background-color 0.5s ease-in-out;
+           -o-transition: background-color 0.5s ease-in-out;
+              transition: background-color 0.5s ease-in-out;
+    }
+
 		#timeRemaining {
 			font-weight: bold;
 			font-family: monospace;
@@ -165,7 +172,7 @@
 		}
 
 		function styleWithFinalWarning() {
-			var flashingState = Math.floor( getCurrentMillis() / 500 ) % 2;
+			var flashingState = Math.floor( getCurrentMillis() / 700 ) % 2;
 			$( "body" ).removeClass().addClass( "finalWarning" + flashingState );
 		}
 
@@ -181,7 +188,7 @@
 </head>
 
 <body>
-	<div id="timeRemaining">5:00</div>
+	<div id="timeRemaining">0:00</div>
 </body>
 
 </html>
