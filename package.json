@@ -1,6 +1,6 @@
 {
 	"name": "timer",
-	"version": "0.3.0",
+	"version": "0.1.0",
 	"author": "ghislain@gmail.com",
 	"contributors":[
 		{
@@ -30,6 +30,6 @@
 	],
 	"license": "MIT",
 	"engine": {
-		"node": ">=0.6"
+		"node": ">=0.4"
 	}
 }
