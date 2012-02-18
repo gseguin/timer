@@ -11,16 +11,16 @@
 
 	<style type="text/css">
     body {
-      -webkit-transition: background-color 0.5s ease-in-out;
-         -moz-transition: background-color 0.5s ease-in-out;
-           -o-transition: background-color 0.5s ease-in-out;
-              transition: background-color 0.5s ease-in-out;
+      -webkit-transition: background-color 0.75s ease-in-out;
+         -moz-transition: background-color 0.75s ease-in-out;
+           -o-transition: background-color 0.75s ease-in-out;
+              transition: background-color 0.75s ease-in-out;
     }
 
 		#timeRemaining {
 			font-weight: bold;
 			font-family: monospace;
-			font-size: 10em;
+			font-size: 15em;
 			position: absolute;
 			top: 50%;
 			left: 50%;
@@ -172,7 +172,7 @@
 		}
 
 		function styleWithFinalWarning() {
-			var flashingState = Math.floor( getCurrentMillis() / 700 ) % 2;
+			var flashingState = Math.floor( getCurrentMillis() / 1000 ) % 2;
 			$( "body" ).removeClass().addClass( "finalWarning" + flashingState );
 		}
 
