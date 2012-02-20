@@ -4,6 +4,9 @@
 <html>
 <head>
 	<title>Demo Timer</title>
+
+  <link href='http://fonts.googleapis.com/css?family=Michroma|Rationale|Orbitron|Black+Ops+One|Wallpoet' rel='stylesheet' type='text/css'>
+
 	<script type="text/javascript" charset="utf-8"
 	        src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
@@ -19,7 +22,7 @@
 
 		#timeRemaining {
 			font-weight: bold;
-			font-family: monospace;
+      font-family: 'Michroma', sans-serif;
 			font-size: 15em;
 			position: absolute;
 			top: 50%;
@@ -28,26 +31,18 @@
 			width: 50%;
 			margin: -15% 0 0 -25%;
 			text-align: center;
-		}
-
-		.noWarning {
-			background-color: green;
-			color: white;
+      background-color: green;
+      color: white;
 		}
 
 		.warning {
-			background-color: red;
+			background-color: #ff4500;
 			color: white;
 		}
 
-		.finalWarning0 {
-			background-color: black;
-			color: red;
-		}
-
-		.finalWarning1 {
-			background-color: white;
-			color: red;
+		.finalWarning {
+			background-color: red;
+			color: white;
 		}
 	</style>
 
@@ -159,21 +154,16 @@
 			} else if ( secondsRemaining <= warningThreshold ) {
 				styleWithWarning();
 			} else {
-				styleWithNoWarning();
+        $( "body" ).removeClass();
 			}
 		}
 
-		function styleWithNoWarning() {
-			$( "body" ).removeClass().addClass( "noWarning" );
-		}
-
 		function styleWithWarning() {
-			$( "body" ).removeClass().addClass( "warning" );
+			$( "body" ).addClass( "warning" );
 		}
 
 		function styleWithFinalWarning() {
-			var flashingState = Math.floor( getCurrentMillis() / 1000 ) % 2;
-			$( "body" ).removeClass().addClass( "finalWarning" + flashingState );
+			$( "body" ).addClass( "finalWarning" );
 		}
 
 		function formatTimeInterval(interval) {
