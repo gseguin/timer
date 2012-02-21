@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+	<title>Demo Timer</title>
+
+  <!--<link href='http://fonts.googleapis.com/css?family=Michroma|Rationale|Orbitron|Black+Ops+One|Wallpoet' rel='stylesheet' type='text/css'>-->
+
+	<script type="text/javascript" charset="utf-8"
+	        src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+	<script src="/socket.io/socket.io.js"></script>
+
+	<style type="text/css">
+    body {
+      -webkit-transition: background-color 1.5s ease-in-out;
+         -moz-transition: background-color 1.5s ease-in-out;
+           -o-transition: background-color 1.5s ease-in-out;
+              transition: background-color 1.5s ease-in-out;
+
+      background-color: green;
+      color: white;
+    }
+
+		#timeRemaining {
+			font-weight: bold;
+      font-family: monospace;
+			font-size: 15em;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			height: 30%;
+			width: 50%;
+			margin: -15% 0 0 -25%;
+			text-align: center;
+		}
+
+		.warning {
+			background-color: #ff4500;
+			color: white;
+		}
+
+		.finalWarning {
+			background-color: red;
+			color: white;
+		}
+	</style>
+
+	<script type="text/javascript">
+		var initialSeconds,
+		    startTime,
+		    lastSyncWithServer = 0,
+		    isRunning = false,
+			  timerId,
+		    timerIntervalCallbackSet = false,
+		    timerInterval = 1000,
+		    warningThreshold = 60,
+		    finalWarningThreshold = 15;
+
+		$( document ).ready( function () {
+			var socket = io.connect( location.protocol + "//" + location.hostname + ":" + location.port );
+			socket.on('start', onStart );
+			socket.on('stop', onStop );
+			socket.on('pause', onPause );
+      // Sync on machine's seconds
+      var now = new Date();
+
+      if ( now.getMilliseconds() === 0 ) {
+        timerId = setInterval( updateTimer, timerInterval );
+      } else {
+        setTimeout( function() {
+          timerId = setInterval( updateTimer, timerInterval );
+        }, 1000 - now.getMilliseconds());
+      }
+		});
+
+		function adjustTextUponWindowResize() {
+			$( window ).bind( "resize", function () {
+				$( "#timeRemaining" ).css( "font-size", $( window ).height() * .5 );
+			} );
+			$( window ).trigger( "resize" );
+		}
+
+		function resetTimer(seconds) {
+			initialSeconds = seconds;
+			updateTimer();
+		}
+
+		function stopTimer() {
+      isRunning = false;
+		}
+
+		function startTimer() {
+			startTime = getCurrentMillis();
+      isRunning = true;
+		}
+
+		function onStart( data ) {
+			stopTimer();
+			resetTimer( data.timeRemaining );
+			startTimer();
+		}
+
+		function onStop( data ) {
+			stopTimer();
+			resetTimer( data.timeRemaining );
+		}
+
+		function onPause() {
+			if ( isRunning ) {
+				initialSeconds = getSecondsRemaining();
+				stopTimer();
+			} else {
+				startTimer();
+			}
+		}
+
+		function getCurrentMillis() {
+			return new Date().getTime();
+		}
+
+		function updateTimer() {
+      if ( isRunning ) {
+        var secondsRemaining = getSecondsRemaining();
+        setStylingForTimeRemaining( secondsRemaining );
+        $( "#timeRemaining" ).html( formatTimeInterval( secondsRemaining ) );
+      }
+		}
+
+		function getSecondsRemaining() {
+			var secondsRemaining = initialSeconds;
+			if ( isRunning ) {
+				secondsRemaining -= Math.floor( (getCurrentMillis() - startTime) / 1000 );
+				if ( secondsRemaining < 0 ) {
+					secondsRemaining = 0;
+				}
+			}
+			return secondsRemaining;
+		}
+
+		function setStylingForTimeRemaining(secondsRemaining) {
+			if ( secondsRemaining <= finalWarningThreshold ) {
+				styleWithFinalWarning();
+			} else if ( secondsRemaining <= warningThreshold ) {
+				styleWithWarning();
+			} else {
+        $( "body" ).removeClass();
+			}
+		}
+
+		function styleWithWarning() {
+			$( "body" ).addClass( "warning" );
+		}
+
+		function styleWithFinalWarning() {
+			$( "body" ).addClass( "finalWarning" );
+		}
+
+		function formatTimeInterval(interval) {
+			var minutes = Math.floor( interval / 60 );
+			var seconds = interval % 60;
+			if ( seconds < 10 ) {
+				seconds = "0" + seconds;
+			}
+			return minutes + ":" + seconds;
+		}
+	</script>
+</head>
+
+<body>
+	<div id="timeRemaining">0:00</div>
+</body>
+
+</html>
