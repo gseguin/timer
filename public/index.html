@@ -51,10 +51,10 @@
 		var initialSeconds,
 		    startTime,
 		    lastSyncWithServer = 0,
-		    running = false,
+		    isRunning = false,
 			  timerId,
 		    timerIntervalCallbackSet = false,
-		    timerInterval = 125,
+		    timerInterval = 1000,
 		    warningThreshold = 60,
 		    finalWarningThreshold = 15;
 
@@ -63,6 +63,16 @@
 			socket.on('start', onStart );
 			socket.on('stop', onStop );
 			socket.on('pause', onPause );
+      // Sync on machine's seconds
+      var now = new Date();
+
+      if ( now.getMilliseconds() === 0 ) {
+        timerId = setInterval( updateTimer, timerInterval );
+      } else {
+        setTimeout( function() {
+          timerId = setInterval( updateTimer, timerInterval );
+        }, 1000 - now.getMilliseconds());
+      }
 		});
 
 		function adjustTextUponWindowResize() {
@@ -72,40 +82,18 @@
 			$( window ).trigger( "resize" );
 		}
 
-		function pollServer() {
-			$.ajax( {
-				url:"state.json",
-				success:function (json) {
-					if ( json.lastReset > lastSyncWithServer ) {
-						lastSyncWithServer = json.lastReset;
-						resetTimer( json.timeRemaining );
-					}
-					running = json.running;
-					if ( !timerIntervalCallbackSet ) {
-						timerIntervalCallbackSet = true;
-						setInterval( updateTimer, timerInterval );
-					}
-				},
-				//error: function(a, b, c) { alert(JSON.stringify(a) + ", " + b + ", " + c); },
-				cache:false
-			} );
-		}
-
 		function resetTimer(seconds) {
 			initialSeconds = seconds;
 			updateTimer();
 		}
 
 		function stopTimer() {
-			if ( timerId ) {
-				clearInterval( timerId );
-				timerId = null;
-			}
+      isRunning = false;
 		}
 
 		function startTimer() {
 			startTime = getCurrentMillis();
-			timerId = setInterval( updateTimer, timerInterval );
+      isRunning = true;
 		}
 
 		function onStart( data ) {
@@ -120,7 +108,7 @@
 		}
 
 		function onPause() {
-			if ( timerId ) {
+			if ( isRunning ) {
 				initialSeconds = getSecondsRemaining();
 				stopTimer();
 			} else {
@@ -133,14 +121,16 @@
 		}
 
 		function updateTimer() {
-			var secondsRemaining = getSecondsRemaining();
-			setStylingForTimeRemaining( secondsRemaining );
-			$( "#timeRemaining" ).html( formatTimeInterval( secondsRemaining ) );
+      if ( isRunning ) {
+        var secondsRemaining = getSecondsRemaining();
+        setStylingForTimeRemaining( secondsRemaining );
+        $( "#timeRemaining" ).html( formatTimeInterval( secondsRemaining ) );
+      }
 		}
 
 		function getSecondsRemaining() {
 			var secondsRemaining = initialSeconds;
-			if ( timerId ) {
+			if ( isRunning ) {
 				secondsRemaining -= Math.floor( (getCurrentMillis() - startTime) / 1000 );
 				if ( secondsRemaining < 0 ) {
 					secondsRemaining = 0;
