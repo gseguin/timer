@@ -29,11 +29,11 @@
     }
 
     .finalWarning .sevenSegSegmentBar,
-    .finalWarning .hmsSeparatorColon {
+    .finalWarning .digitalClock .hmsSeparator .hmsSeparatorColon {
     	background-color: red;
     }
 
-    .finalwarning .sevenSegSegmentEnd {
+    .finalWarning .sevenSegSegmentEnd {
       border-color: red;
     }
 
@@ -581,6 +581,7 @@ chromium.org/developers/how-tos/chrome-frame-getting-started -->
       'Uize.Date.Formatter'
     ],
     builder:function () {
+      var now = new Date();
       /*** create the example page widget ***/
       var page = Uize.Widget.Page();
 
@@ -613,8 +614,11 @@ chromium.org/developers/how-tos/chrome-frame-getting-started -->
       page.wireUi();
 
       /*** start the clock ***/
-      updateClockDisplay();
-      setInterval(updateClockDisplay, 1000);
+      // Sync the seconds with the current machine's seconds
+      setTimeout( function() {
+        updateClockDisplay();
+        setInterval(updateClockDisplay, 1000);
+      }, 1000 - now.getMilliseconds());
     }
   });
 
