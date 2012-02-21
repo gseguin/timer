@@ -468,25 +468,6 @@ chromium.org/developers/how-tos/chrome-frame-getting-started -->
     $(window).trigger("resize");
   }
 
-  function pollServer() {
-    $.ajax({
-      url:"state.json",
-      success:function (json) {
-        if (json.lastReset > lastSyncWithServer) {
-          lastSyncWithServer = json.lastReset;
-          resetTimer(json.timeRemaining);
-        }
-        running = json.running;
-        if (!timerIntervalCallbackSet) {
-          timerIntervalCallbackSet = true;
-          setInterval(updateTimer, timerInterval);
-        }
-      },
-      //error: function(a, b, c) { alert(JSON.stringify(a) + ", " + b + ", " + c); },
-      cache:false
-    });
-  }
-
   function resetTimer(seconds) {
     initialSeconds = seconds;
     updateTimer();
